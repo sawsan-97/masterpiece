@@ -1,0 +1,52 @@
+/* أزرار Bootstrap المخصصة */
+
+/* زر ذهبي أساسي */
+.btn.btn-gold {
+    background-color: rgba(255, 191, 0, 1);
+    color: white;
+    border-color: rgba(255, 191, 0, 1);
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn.btn-gold:hover,
+.btn.btn-gold:focus,
+.btn.btn-gold:active {
+    background-color: #e6ac00 !important;
+    border-color: #e6ac00 !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* زر ذهبي حدودي */
+.btn.btn-outline-gold {
+    color: rgba(255, 191, 0, 1);
+    border-color: rgba(255, 191, 0, 1);
+    background-color: transparent;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn.btn-outline-gold:hover,
+.btn.btn-outline-gold:focus,
+.btn.btn-outline-gold:active {
+    background-color: rgba(255, 191, 0, 1) !important;
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* زر حجم صغير */
+.btn-sm.btn-gold,
+.btn-sm.btn-outline-gold {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* زر في البطاقات */
+.card .btn.btn-gold,
+.card .btn.btn-outline-gold {
+    width: 100%;
+    margin-top: 10px;
+}

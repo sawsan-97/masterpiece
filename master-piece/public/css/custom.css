@@ -1,0 +1,63 @@
+/* أنماط قسم التعريف بالموقع */
+.intro-section {
+    background-color: rgba(255, 249, 243, 1) !important;
+}
+
+.intro-title {
+    color: #8b0000;
+    font-weight: 700;
+}
+
+.intro-text {
+    color: #555;
+    line-height: 1.8;
+}
+
+/* أنماط قسم التصنيفات */
+.category-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.category-card .card-img-top {
+    height: 180px;
+    object-fit: cover;
+}
+
+.category-card .card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.category-card .card-text {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.btn-primary-dark {
+    background-color: #8b0000;
+    color: white;
+    border-color: #8b0000;
+    padding: 10px 25px;
+    border-radius: 4px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary-dark:hover {
+    background-color: #700000;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+}

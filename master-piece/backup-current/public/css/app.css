@@ -1,0 +1,25 @@
+/* أنماط متجر نشمية */
+
+:root {
+    --jordan-red: rgba(183, 28, 28, 1);
+    --jordan-green: #007a3d;
+    --jordan-black: #000000;
+    --jordan-white: #ffffff;
+    --primary: #a83232;
+    --primary-dark: #8a2828;
+    --gold-color: rgba(255, 191, 0, 1);
+}
+
+/* أنماط أخرى */
+.gold-text {
+    color: var(--gold-color);
+}
+
+.text-gold {
+    color: var(--gold-color) !important;
+}
+
+.gold-bg {
+    background-color: var(--gold-color);
+    color: white;
+}

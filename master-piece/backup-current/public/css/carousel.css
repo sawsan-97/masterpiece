@@ -1,0 +1,89 @@
+/* تنسيق السلايدر */
+.carousel-control-prev,
+.carousel-control-next {
+    width: 5%;
+    background-color: rgba(0, 0, 0, 0.3);
+    height: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 5px;
+}
+
+.carousel-control-prev {
+    left: -10px;
+}
+
+.carousel-control-next {
+    right: -10px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    width: 25px;
+    height: 25px;
+}
+
+/* تنسيق كروت المنتجات */
+.card {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+    transition: transform 0.5s;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-title {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+}
+
+.card-text {
+    color: #666;
+    font-size: 14px;
+}
+
+.btn-primary {
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 14px;
+    background-color: var(--jordan-green, #007a3d);
+    border-color: var(--jordan-green, #007a3d);
+}
+
+.btn-primary:hover {
+    background-color: var(--jordan-green, #005c2e);
+    border-color: var(--jordan-green, #005c2e);
+}
+
+/* تنسيق العنوان */
+.section-title {
+    position: relative;
+    padding-right: 15px;
+    margin-bottom: 25px;
+    font-weight: 700;
+    color: #333;
+}
+
+.section-title::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 5px;
+    height: 24px;
+    background-color: var(--jordan-red, rgba(183, 28, 28, 1));
+}
