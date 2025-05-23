@@ -616,7 +616,7 @@
 </section>
 
 <div class="container py-5">
-    <h2 class="text-center mb-5" style="color: #8B0000; font-weight: bold;">آخر الأخبار</h2>
+    <h2 class="text-center mb-5" style="color: #8B0000; font-weight: bold;">مدونة بيت النشميات</h2>
     <div class="row justify-content-center">
         @forelse($news as $item)
             <div class="col-md-4 mb-4 d-flex">

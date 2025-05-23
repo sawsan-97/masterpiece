@@ -24,50 +24,94 @@ class CartController extends Controller
     }
 
     public function add(Request $request, Product $product)
-    {
-        if (!Auth::check()) {
-            return redirect()->route('login');
+{
+    if (!Auth::check()) {
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'message' => 'يجب تسجيل الدخول أولاً لإضافة منتجات للسلة'
+            ], 401);
+        }
+        return redirect()->route('login');
+    }
+
+    try {
+        DB::beginTransaction();
+
+        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+        $cartItem = $cart->items()->where('product_id', $product->id)->first();
+
+        // التحقق من المخزون المتاح قبل الإضافة
+        $currentQuantity = $cartItem ? $cartItem->quantity : 0;
+        if ($currentQuantity + 1 > $product->stock) {
+            DB::rollBack();
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'message' => 'لا يمكن إضافة أكثر من الكمية المتوفرة في المخزون! الكمية المتاحة: ' . $product->stock
+                ], 422);
+            }
+            return redirect()->back()->with('error', 'لا يمكن إضافة أكثر من الكمية المتوفرة في المخزون! الكمية المتاحة: ' . $product->stock);
         }
 
-        try {
-            DB::beginTransaction();
+        if ($cartItem) {
+            $cartItem->increment('quantity');
+        } else {
+            $cart->items()->create([
+                'product_id' => $product->id,
+                'quantity' => 1,
+                'price' => $product->price
+            ]);
+        }
 
-            // الحصول على سلة المستخدم أو إنشاء سلة جديدة
-            $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
+        DB::commit();
 
-            // التحقق من وجود المنتج في السلة
-            $cartItem = $cart->items()->where('product_id', $product->id)->first();
-
-            if ($cartItem) {
-                // زيادة الكمية إذا كان المنتج موجوداً
-                $cartItem->increment('quantity');
-            } else {
-                // إضافة منتج جديد إلى السلة
-                $cart->items()->create([
-                    'product_id' => $product->id,
-                    'quantity' => 1,
-                    'price' => $product->price
-                ]);
-            }
-
-            DB::commit();
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
                 'message' => 'تمت إضافة المنتج إلى السلة بنجاح',
                 'cart_count' => $cart->items()->count()
             ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
+        }
+
+        return redirect()->back()->with('success', 'تمت إضافة المنتج إلى السلة بنجاح');
+
+    } catch (\Exception $e) {
+        DB::rollBack();
+        if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
-                'message' => 'حدث خطأ أثناء إضافة المنتج إلى السلة',
-                'error' => $e->getMessage()
+                'message' => 'حدث خطأ أثناء إضافة المنتج إلى السلة'
             ], 500);
         }
+        return redirect()->back()->with('error', 'حدث خطأ أثناء إضافة المنتج إلى السلة');
     }
-
+}
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'quantity' => 'required|integer|min:1'
+        ]);
+
         $cartItem = CartItem::findOrFail($id);
+        $product = $cartItem->product;
+
+        // التحقق من الكمية المطلوبة مقابل المخزون المتاح
+        if ($request->quantity > $product->stock) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'الكمية المطلوبة غير متوفرة في المخزون. الكمية المتوفرة: ' . $product->stock
+                ], 422);
+            }
+            return redirect()->back()->with('error', 'الكمية المطلوبة غير متوفرة في المخزون. الكمية المتوفرة: ' . $product->stock);
+        }
+
         $cartItem->update(['quantity' => $request->quantity]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'تم تحديث الكمية بنجاح'
+            ]);
+        }
+
         return redirect()->back()->with('success', 'تم تحديث الكمية بنجاح');
     }
 

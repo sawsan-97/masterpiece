@@ -44,14 +44,15 @@
                         @method('PUT')
                         <button type="button" class="quantity-btn decrease">-</button>
                         <input type="number"
-                               name="quantity"
-                               value="{{ $item->quantity }}"
-                               min="1"
-                               max="{{ $item->product->stock }}"
-                               class="quantity-input"
-                               data-price="{{ $item->product->price }}"
-                               data-max="{{ $item->product->stock }}"
-                               readonly>
+                        id="quantity-input"
+                        name="quantity"
+                        value="{{ $item->quantity }}"
+                        min="1"
+                        max="{{ $item->product->stock }}"
+                        class="quantity-input"
+                        data-price="{{ $item->product->price }}"
+                        data-max="{{ $item->product->stock }}"
+                        readonly>
                         <button type="button" class="quantity-btn increase">+</button>
                     </form>
                 </div>
@@ -453,18 +454,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 'quantity': quantity
             })
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('حدث خطأ في تحديث السلة');
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            // يمكن إضافة إشعار نجاح أو رسالة هنا إذا أردت
-            console.log('تم تحديث السلة بنجاح', data);
+            if (data.success) {
+                // تحديث سعر المنتج
+                const item = form.closest('.cart-item');
+                updateItemPrice(item, quantity);
+                // تحديث المجموع الكلي
+                updateCartTotals();
+            } else {
+                // عرض رسالة الخطأ
+                alert(data.message);
+                // إعادة تعيين الكمية إلى القيمة السابقة
+                const input = form.querySelector('.quantity-input');
+                input.value = input.dataset.lastValue || 1;
+                // تحديث سعر المنتج
+                const item = form.closest('.cart-item');
+                updateItemPrice(item, input.value);
+                // تحديث المجموع الكلي
+                updateCartTotals();
+            }
         })
         .catch(error => {
             console.error('Error:', error);
+            alert('حدث خطأ أثناء تحديث الكمية');
         });
     }
 
@@ -476,6 +489,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const itemId = item.dataset.id;
         const form = item.querySelector('.quantity-form');
 
+        // حفظ القيمة السابقة عند تغيير الكمية
+        quantityInput.addEventListener('change', function() {
+            this.dataset.lastValue = this.value;
+        });
+
         // زر النقصان
         decreaseBtn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -484,12 +502,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentQty > 1) {
                 currentQty--;
                 quantityInput.value = currentQty;
-
-                // تحديث سعر المنتج
-                updateItemPrice(item, currentQty);
-
-                // تحديث المجموع الكلي
-                updateCartTotals();
+                quantityInput.dataset.lastValue = currentQty;
 
                 // إرسال التحديث للخادم
                 updateQuantityViaAjax(itemId, currentQty, form);
@@ -506,12 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentQty < maxQty) {
                 currentQty++;
                 quantityInput.value = currentQty;
-
-                // تحديث سعر المنتج
-                updateItemPrice(item, currentQty);
-
-                // تحديث المجموع الكلي
-                updateCartTotals();
+                quantityInput.dataset.lastValue = currentQty;
 
                 // إرسال التحديث للخادم
                 updateQuantityViaAjax(itemId, currentQty, form);
@@ -522,6 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // تحديث أولي للمجاميع
     updateCartTotals();
 });
+
 </script>
 @endpush
 @endsection

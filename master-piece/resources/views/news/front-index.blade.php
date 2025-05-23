@@ -1,8 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <h1 class="text-center mb-4">آخر الأخبار</h1>
+<div class="container " style="background-color: #faf6f3;">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center mb-2 mt-5" style="color: #8B0000;">مدونة بيت النشميات</h1>
+            <p class="text-center mb-5" style="color: #555; font-size: 1.1rem;">قصص ملهمة، نصائح مستدامة، وأفكار لمشاريع منزلية من القلب</p>
+        </div>
+    </div>
 
     <div class="row">
         @forelse($latestNews as $item)

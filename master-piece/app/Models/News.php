@@ -18,39 +18,21 @@ class News extends Model
         'content',
         'image',
         'is_active',
+        'published_at',
+        'user_id',
         'meta_description',
-        'meta_keywords',
-        'user_id'
+        'meta_keywords'
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
-        'created_at' => 'datetime'
+        'published_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    protected $appends = ['image_url'];
-
     /**
-     * الحصول على رابط الصورة الكامل
-     */
-    public function getImageUrlAttribute()
-    {
-        if ($this->image) {
-            return asset('storage/' . $this->image);
-        }
-        return null;
-    }
-
-    /**
-     * الحصول على ملخص المحتوى
-     */
-    public function getExcerpt($length = 150)
-    {
-        return Str::limit(strip_tags($this->content), $length);
-    }
-
-    /**
-     * العلاقة مع المستخدم
+     * العلاقة مع المستخدم الذي أنشأ الخبر
      */
     public function user()
     {
@@ -58,34 +40,37 @@ class News extends Model
     }
 
     /**
-     * إعداد القيم الافتراضية قبل الحفظ
+     * إنشاء excerpt للخبر
      */
+    public function getExcerpt($length = 100)
+    {
+        return Str::limit(strip_tags($this->content), $length);
+    }
+
+    /**
+     * Scope للأخبار المفعلة فقط
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope للأخبار الأحدث
+     */
+    public function scopeLatest($query)
+    {
+        return $query->orderBy('published_at', 'desc');
+    }
+
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($news) {
-            Log::info('إنشاء خبر جديد', [
-                'title' => $news->title,
-                'user_id' => $news->user_id
-            ]);
-
-            // إنشاء slug من العنوان إذا لم يتم تحديده
-            if (!$news->slug) {
-                $news->slug = Str::slug($news->title);
+            if (is_null($news->published_at)) {
+                $news->published_at = now();
             }
-
-            // تعيين user_id إذا لم يتم تحديده
-            if (!$news->user_id && Auth::check()) {
-                $news->user_id = Auth::id();
-            }
-        });
-
-        static::created(function ($news) {
-            Log::info('تم إنشاء الخبر بنجاح', [
-                'news_id' => $news->id,
-                'user_id' => $news->user_id
-            ]);
         });
     }
 }

@@ -5,30 +5,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-
 
 class NewsController extends Controller
 {
     /**
-     * عرض قائمة الأخبار في الواجهة الأمامية
+     * Display a listing of the news on the frontend
      */
     public function frontIndex()
     {
         $latestNews = News::where('is_active', true)
-                         ->latest()
-                         ->paginate(9);
-
+                          ->latest()
+                          ->paginate(9);
         return view('news.front-index', compact('latestNews'));
     }
 
     /**
-     * عرض خبر محدد في الواجهة الأمامية
+     * Display a specific news item on the frontend
      */
     public function show(News $news)
     {
-        if (!$news->is_active) {
+        if (!$news->is_active && !auth()->user()?->isAdmin()) {
             abort(404);
         }
         return view('news.show', compact('news'));
@@ -52,82 +48,53 @@ class NewsController extends Controller
     }
 
     /**
+     * Show the form for editing the specified news item
+     */
+    public function edit(News $news)
+    {
+        return view('admin.news.edit', compact('news'));
+    }
+
+    /**
      * Store a newly created news item in storage
      */
     public function store(Request $request)
     {
-        Log::info('بدء عملية إنشاء خبر جديد', [
-            'user_id' => Auth::id(),
-            'request_data' => $request->except(['image'])
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_active' => 'nullable',
+            'published_at' => 'nullable|date',
         ]);
 
-        DB::beginTransaction();
+        // معالجة checkbox "is_active"
+        $validatedData['is_active'] = $request->has('is_active') ? 1 : 0;
+
         try {
-            $validatedData = $request->validate([
-                'title' => 'required|string|max:255',
-                'content' => 'required|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-                'is_active' => 'nullable',
-                'meta_description' => 'nullable|string|max:255',
-                'meta_keywords' => 'nullable|string|max:255',
-            ]);
-
-            Log::info('تم التحقق من البيانات بنجاح', ['validated_data' => $validatedData]);
-
-            // معالجة checkbox "is_active"
-            $validatedData['is_active'] = $request->has('is_active') ? 1 : 0;
-
-            // إنشاء slug من العنوان
-            $validatedData['slug'] = Str::slug($validatedData['title']);
-
             // معالجة الصورة إذا تم رفعها
             if ($request->hasFile('image')) {
-                Log::info('تم استلام ملف الصورة', [
-                    'original_name' => $request->file('image')->getClientOriginalName(),
-                    'mime_type' => $request->file('image')->getMimeType(),
-                    'size' => $request->file('image')->getSize()
-                ]);
-
+                Log::info('Image file received: ' . $request->file('image')->getClientOriginalName());
                 $imagePath = $request->file('image')->store('news', 'public');
-                if (!$imagePath) {
-                    throw new \Exception('فشل في رفع الصورة');
-                }
-                Log::info('تم حفظ الصورة بنجاح', ['path' => $imagePath]);
-                $validatedData['image'] = $imagePath;
+                Log::info('Image stored at: ' . $imagePath);
+                $validatedData['image'] = $imagePath; // تخزين المسار فقط بدون 'storage/'
             }
 
-            // إضافة معرف المستخدم
-            $validatedData['user_id'] = Auth::id();
-
-            Log::info('محاولة إنشاء الخبر', ['data' => $validatedData]);
+            // إضافة البيانات الأخرى المفقودة إذا لزم الأمر
+            if (!isset($validatedData['published_at']) || $validatedData['published_at'] == '') {
+                $validatedData['published_at'] = now();
+            }
 
             // إنشاء سجل الخبر
             $news = News::create($validatedData);
-
-            if (!$news) {
-                throw new \Exception('فشل في إنشاء الخبر');
-            }
-
-            DB::commit();
-
-            Log::info('تم إنشاء الخبر بنجاح', [
-                'news_id' => $news->id,
-                'user_id' => Auth::id()
-            ]);
+            Log::info('News created with ID: ' . $news->id);
 
             return redirect()->route('admin.news.index')
                 ->with('success', 'تم إضافة الخبر بنجاح');
         } catch (\Exception $e) {
-            DB::rollBack();
-
-            Log::error('خطأ في إنشاء الخبر: ' . $e->getMessage(), [
-                'user_id' => Auth::id(),
-                'request_data' => $request->except(['image']),
-                'trace' => $e->getTraceAsString()
-            ]);
-
-            return back()
-                ->withInput()
+            Log::error('Error storing news: ' . $e->getMessage());
+            Log::error('Error trace: ' . $e->getTraceAsString());
+            return back()->withInput()
                 ->withErrors(['error' => 'حدث خطأ أثناء حفظ الخبر: ' . $e->getMessage()]);
         }
     }
@@ -137,31 +104,30 @@ class NewsController extends Controller
      */
     public function update(Request $request, News $news)
     {
-        $validated = $request->validate([
+        $validatedData = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_active' => 'nullable',
-            'meta_description' => 'nullable|string|max:255',
-            'meta_keywords' => 'nullable|string|max:255',
         ]);
 
-        // ضبط قيمة is_active - معالجة checkbox
-        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
-
-        if ($request->hasFile('image')) {
-            // حذف الصورة القديمة إذا كانت موجودة
-            if ($news->image) {
-                $oldImagePath = str_replace('storage/', '', $news->image);
-                Storage::disk('public')->delete($oldImagePath);
-            }
-
-            $imagePath = $request->file('image')->store('news', 'public');
-            $validated['image'] = 'storage/' . $imagePath;
-        }
+        // معالجة checkbox "is_active"
+        $validatedData['is_active'] = $request->has('is_active') ? 1 : 0;
 
         try {
-            $news->update($validated);
+            // معالجة الصورة إذا تم رفعها
+            if ($request->hasFile('image')) {
+                // حذف الصورة القديمة إذا كانت موجودة
+                if ($news->image) {
+                    Storage::disk('public')->delete($news->image);
+                }
+
+                $imagePath = $request->file('image')->store('news', 'public');
+                $validatedData['image'] = $imagePath; // تخزين المسار فقط
+            }
+
+            // تحديث سجل الخبر
+            $news->update($validatedData);
             Log::info('News updated successfully with ID: ' . $news->id);
 
             return redirect()->route('admin.news.index')
@@ -181,8 +147,7 @@ class NewsController extends Controller
         try {
             // حذف الصورة إذا كانت موجودة
             if ($news->image) {
-                $imagePath = str_replace('storage/', '', $news->image);
-                Storage::disk('public')->delete($imagePath);
+                Storage::disk('public')->delete($news->image);
             }
 
             $news->delete();

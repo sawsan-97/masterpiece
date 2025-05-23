@@ -2,7 +2,7 @@
 
 @section('news-section')
 <div class="container-fluid py-5">
-    <h1 class="text-center mb-5">آخر الأخبار</h1>
+    <h1 class="text-center mb-5 mt-5" style="color: rgba(183, 28, 28, 1);">مدونة بيت النشميات</h1>
 
     <div class="row">
         @forelse($news as $item)

@@ -36,7 +36,7 @@
 
                     @if($news->image)
                         <div class="mb-2">
-                            <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $news->title }}" class="img-thumbnail" style="max-height: 200px">
+                            <img src="{{ asset('storage/' . $news->image) }}" alt="{{ $news->title }}" class="img-thumbnail" style="max-height: 200px">
                             <p class="text-muted">الصورة الحالية</p>
                         </div>
                     @endif

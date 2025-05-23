@@ -34,7 +34,7 @@
                             <div class="card h-100" style="border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: all 0.3s ease;">
                                 <div class="product-image position-relative">
                                     @if($product->image)
-                                        <img src="{{ asset($product->image) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 250px; object-fit: cover;">
+                                    <img src="{{ asset('storage/' . $product->image) }}" class="card-img-top" alt="{{ $product->name }}" style="height: 250px; object-fit: cover;">
                                     @else
                                         <img src="{{ asset('images/placeholder.jpg') }}" class="card-img-top" alt="{{ $product->name }}" style="height: 250px; object-fit: cover;">
                                     @endif
@@ -54,7 +54,7 @@
                                             <div class="row align-items-center">
                                                 <div class="col-md-3">
                                                     <div class="quantity-input">
-                                                        <label for="quantity" class="form-label">الكمية</label>
+                                                        
                                                         <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" max="{{ $product->stock }}">
                                                     </div>
                                                 </div>
@@ -116,59 +116,51 @@
     pointer-events: auto;
 }
 </style>
+@section('scripts')
 <script>
-    setTimeout(function() {
-        let toast = document.getElementById('toast-success');
-        if(toast) toast.classList.remove('show');
-    }, 2500);
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[action*="cart/add"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
 
-document.querySelectorAll('.add-to-cart-form').forEach(form => {
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        fetch(this.action, {
-            method: 'POST',
-            body: new FormData(this),
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            // تحديث عداد السلة
-            const cartCountElement = document.getElementById('cart-count');
-            if (cartCountElement) {
-                cartCountElement.textContent = data.cart_count;
-                if (data.cart_count > 0) {
-                    cartCountElement.classList.remove('hidden');
-                } else {
-                    cartCountElement.classList.add('hidden');
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 }
-            }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // تحديث عداد السلة إذا كان موجود
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement && data.cart_count !== undefined) {
+                    cartCountElement.textContent = data.cart_count;
+                    cartCountElement.classList.remove('hidden');
+                }
+                // عرض رسالة نجاح
+                const toast = document.createElement('div');
+                toast.className = 'toast-message show';
+                toast.textContent = data.message;
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
 
-            // عرض رسالة نجاح
-            const toast = document.createElement('div');
-            toast.className = 'toast-message show';
-            toast.textContent = data.message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            // عرض رسالة خطأ
-            const toast = document.createElement('div');
-            toast.className = 'toast-message show error';
-            toast.textContent = 'حدث خطأ أثناء إضافة المنتج إلى السلة';
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+                // أطلق حدث لتحديث عداد السلة في كل الصفحات
+                document.dispatchEvent(new Event('cartUpdated'));
+            })
+            .catch(error => {
+                console.error(error);
+                // عرض رسالة خطأ
+                const toast = document.createElement('div');
+                toast.className = 'toast-message show error';
+                toast.textContent = 'حدث خطأ أثناء إضافة المنتج إلى السلة';
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
+            });
         });
     });
 });
 </script>
+@endsection
 @endsection

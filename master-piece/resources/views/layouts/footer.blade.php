@@ -201,10 +201,10 @@
                     <h4>روابط مهمة</h4>
                     <div class="footer-links">
                         <a href="{{ route('home') }}">الرئيسية</a>
-                        <a href="#">المنتجات الغذائية</a>
-                        <a href="#">الحرف اليدوية</a>
-                        <a href="#">من نحن</a>
-                        <a href="#">اتصل بنا</a>
+                        <a href="{{ route('products.index')}}">المنتجات</a>
+
+                        <a href="{{ route('about') }}">من نحن</a>
+                        <a href="{{ route('contact') }}">اتصل بنا</a>
                     </div>
                 </div>
 

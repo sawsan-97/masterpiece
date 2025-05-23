@@ -102,6 +102,49 @@
     </div>
     @endif
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form[action*="cart/add"]').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this),
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // تحديث عداد السلة إذا كان موجود
+                const cartCountElement = document.getElementById('cart-count');
+                if (cartCountElement && data.cart_count !== undefined) {
+                    cartCountElement.textContent = data.cart_count;
+                    cartCountElement.classList.remove('hidden');
+                }
+                // عرض رسالة نجاح
+                const toast = document.createElement('div');
+                toast.className = 'toast-message show';
+                toast.textContent = data.message;
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
+            })
+            .catch(error => {
+                // عرض رسالة خطأ
+                const toast = document.createElement('div');
+                toast.className = 'toast-message show error';
+                toast.textContent = 'حدث خطأ أثناء إضافة المنتج إلى السلة';
+                document.body.appendChild(toast);
+                setTimeout(() => { toast.remove(); }, 3000);
+            });
+        });
+    });
+});
+
+</script>
 @endsection
 
 @section('styles')
