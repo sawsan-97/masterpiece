@@ -93,6 +93,13 @@
                             <label for="sale_price">سعر البيع (اختياري)</label>
                             <input type="number" name="sale_price" id="sale_price" class="form-control" step="0.01">
                         </div>
+
+                        <div class="form-group">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured" value="1">
+                                <label class="custom-control-label" for="is_featured">منتج مميز</label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\JoinRequestController;
+use App\Http\Controllers\ContactController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Hash;
@@ -90,13 +91,8 @@ Route::get('/about', function () {
 })->name('about');
 
 // صفحة اتصل بنا
-Route::get('/contact', function () {
-    return view('contact');
-})->name('contact');
-
-Route::post('/contact', function () {
-    return redirect()->back()->with('success', 'تم إرسال رسالتك بنجاح. سنتواصل معك قريباً.');
-})->name('contact.submit');
+Route::get('/contact', [ContactController::class, 'show'])->name('contact');
+Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
 
 //طلب الانضمام
 Route::get('/join-request', function () {
@@ -115,7 +111,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('news', App\Http\Controllers\NewsController::class)->except(['show']);
 }); // Added missing closing bracket here
 
-Route::post('/join-request', [JoinRequestController::class, 'store'])->name('join.request.submit');
+Route::post('/join-request', [App\Http\Controllers\JoinRequestController::class, 'store'])->name('join.request.submit');
 
 // مسارات آراء العملاء
 Route::get('/testimonials', [\App\Http\Controllers\TestimonialController::class, 'index'])->name('testimonials.index');
@@ -247,13 +243,16 @@ Route::group(['middleware' => ['web', 'auth', 'admin'], 'prefix' => 'admin', 'as
     Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class);
 
     // مسارات الأخبار
-    Route::get('/news/create', [NewsController::class, 'create'])->name('news.create');
-    Route::post('/news', [NewsController::class, 'store'])->name('news.store');
-    Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+    Route::resource('news', App\Http\Controllers\NewsController::class)->except(['show']);
 
     // مسارات طلبات الانضمام
-    Route::get('/join-requests', [JoinRequestController::class, 'index'])->name('join-requests.index');
-    Route::patch('/join-requests/{joinRequest}/status', [JoinRequestController::class, 'updateStatus'])->name('join-requests.update-status');
+    Route::get('/join-requests', [App\Http\Controllers\JoinRequestController::class, 'index'])->name('join-requests.index');
+    Route::patch('/join-requests/{joinRequest}/status', [App\Http\Controllers\JoinRequestController::class, 'updateStatus'])->name('join-requests.update-status');
+
+    // مسارات رسائل اتصل بنا
+    Route::get('/contact-messages', [App\Http\Controllers\Admin\ContactMessageController::class, 'index'])->name('contact-messages.index');
+    Route::patch('/contact-messages/{message}/status', [App\Http\Controllers\Admin\ContactMessageController::class, 'updateStatus'])->name('contact-messages.update-status');
+    Route::delete('/contact-messages/{message}', [App\Http\Controllers\Admin\ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
 });
 
 Storage::disk('public')->exists('news/your_image.jpg');

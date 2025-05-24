@@ -4,14 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class JoinRequest extends Model
+class ContactMessage extends Model
 {
     protected $fillable = [
         'name',
         'email',
-        'address',
         'phone',
-        'product_image',
+        'message',
         'status',
         'admin_notes'
     ];

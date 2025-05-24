@@ -9,21 +9,30 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\JoinRequest;
+use App\Models\ContactMessage;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $stats = [
-            'orders_count' => Order::count(), // تأكد من أن لديك نموذج Order
-        'users_count' => User::count(),
+        $totalOrders = Order::count();
+        $totalUsers = User::count();
+        $totalNews = News::count();
+        $totalProducts = Product::count();
+        $totalRevenue = Order::where('status', 'completed')->sum('total');
+        $recentOrders = Order::with('user')->latest()->take(5)->get();
+        $pendingJoinRequests = JoinRequest::where('status', 'pending')->count();
+        $pendingMessages = ContactMessage::where('status', 'pending')->count();
 
-            'news_count' => News::count(),
-            'products_count' => Product::count(),
-            'orders_count' => Order::count(),
-            'recent_orders' => Order::with('user')->latest()->take(5)->get(),
-        ];
-
-        return view('admin.dashboard', compact('stats'));
+        return view('admin.dashboard', compact(
+            'totalOrders',
+            'totalUsers',
+            'totalNews',
+            'totalProducts',
+            'totalRevenue',
+            'recentOrders',
+            'pendingJoinRequests',
+            'pendingMessages'
+        ));
     }
 }

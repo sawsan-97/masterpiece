@@ -51,9 +51,20 @@ class ProductController extends Controller
             $imagePath = $request->file('image')->store('products', 'public');
         }
 
+        // إنشاء slug فريد
+        $slug = Str::slug($request->name);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        // التحقق من وجود الـ slug وإضافة رقم إذا كان موجوداً
+        while (Product::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $counter;
+            $counter++;
+        }
+
         Product::create([
             'name' => $request->name,
-            'slug' => Str::slug($request->name),
+            'slug' => $slug,
             'description' => $request->description,
             'price' => $request->price,
             'image' => $imagePath,

@@ -88,6 +88,17 @@
                                 @endif
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="{{ route('admin.contact-messages.index') }}" class="nav-link {{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-envelope"></i>
+                                <p>
+                                    رسائل اتصل بنا
+                                    @if(isset($pendingMessagesCount) && $pendingMessagesCount > 0)
+                                        <span class="badge badge-warning right">{{ $pendingMessagesCount }}</span>
+                                    @endif
+                                </p>
+                            </a>
+                        </li>
                         <li class="nav-item mt-4">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -97,6 +108,7 @@
                                 </button>
                             </form>
                         </li>
+
                     </ul>
                 </div>
             </div>
