@@ -50,24 +50,12 @@
                     <footer class="news-footer mt-5 pt-4 border-top">
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="{{ route('news.index') }}"
-                               class="btn btn-outline-primary">
+                               class="btn" style="background-color: #007A3D; color: white; padding: 8px 25px; border-radius: 10px; transition: all 0.3s;">
                                 <i class="fas fa-arrow-right me-2"></i>
-                                العودة إلى الأخبار
+                                العودة إلى المدونة
                             </a>
 
-                            <!-- Social Share Buttons (Optional) -->
-                            <div class="social-share">
-                                <span class="text-muted me-3">مشاركة:</span>
-                                <a href="#" class="btn btn-sm btn-outline-secondary me-2" title="فيسبوك">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                                <a href="#" class="btn btn-sm btn-outline-secondary me-2" title="تويتر">
-                                    <i class="fab fa-twitter"></i>
-                                </a>
-                                <a href="#" class="btn btn-sm btn-outline-secondary" title="واتساب">
-                                    <i class="fab fa-whatsapp"></i>
-                                </a>
-                            </div>
+                      
                         </div>
                     </footer>
                 </div>

@@ -193,6 +193,15 @@
                     <i class="fas fa-search"></i>
                 </button>
             </form>
+            <div style="color: white; font-size: 100px; margin-bottom: 1rem;">
+                <p  style="color: white; font-size: 40px; margin-bottom: 1rem;">ادعمي المرأة المحلية</p>
+                <p  style="color: white; font-size: 40px; margin-bottom: 1rem;">اكتشفي المنتجات الأصيلة</p>
+
+            </div>
+            <a href="{{ route('products.index') }}" style="display:block; margin:20px auto 0; max-width:150px; background:#8B0000; color:#fff; border-radius:10px; padding:12px 0; font-size:1.1rem; font-weight:600; text-align:center; text-decoration:none; transition:all 0.3s;">
+                <i class="fas fa-shopping-basket me-2"></i>
+                تسوق الآن
+            </a>
         </div>
 
         <div class="slider">

@@ -6,17 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CategoryController extends Controller
 {
     public function index()
     {
         try {
-            $categories = Category::withCount('products')->latest()->paginate(10);
+            $categories = Category::orderBy('name')->get();
             return view('admin.categories.index', compact('categories'));
         } catch (\Exception $e) {
+            Log::error('خطأ في عرض التصنيفات: ' . $e->getMessage());
             return redirect()->route('admin.dashboard')
-                ->with('error', 'حدث خطأ أثناء تحميل التصنيفات: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ أثناء تحميل التصنيفات');
         }
     }
 
@@ -27,34 +30,43 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
+            'is_featured' => 'boolean'
+        ]);
+
         try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
+            DB::beginTransaction();
 
-            $category = new Category();
-            $category->name = $request->name;
-            $category->slug = Str::slug($request->name);
-            $category->description = $request->description;
-            $category->is_active = true;
-
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/categories'), $imageName);
-                $category->image = 'images/categories/' . $imageName;
+            // إنشاء slug فريد
+            $slug = Str::slug($request->name);
+            $originalSlug = $slug;
+            $counter = 1;
+            while (Category::where('slug', $slug)->exists()) {
+                $slug = $originalSlug . '-' . $counter;
+                $counter++;
             }
 
-            $category->save();
+            $category = Category::create([
+                'name' => $request->name,
+                'slug' => $slug,
+                'description' => $request->description,
+                'is_active' => $request->boolean('is_active', true),
+                'is_featured' => $request->boolean('is_featured', false)
+            ]);
+
+            DB::commit();
 
             return redirect()->route('admin.categories.index')
                 ->with('success', 'تم إضافة التصنيف بنجاح');
         } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('خطأ في إضافة تصنيف: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء إضافة التصنيف: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ أثناء إضافة التصنيف');
         }
     }
 
@@ -65,55 +77,58 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
+            'is_featured' => 'boolean'
+        ]);
+
         try {
-            $request->validate([
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            ]);
+            DB::beginTransaction();
 
-            $category->name = $request->name;
-            $category->slug = Str::slug($request->name);
-            $category->description = $request->description;
-
-            if ($request->hasFile('image')) {
-                // حذف الصورة القديمة
-                if ($category->image && file_exists(public_path($category->image))) {
-                    unlink(public_path($category->image));
+            // تحديث slug إذا تم تغيير الاسم
+            if ($category->name !== $request->name) {
+                $slug = Str::slug($request->name);
+                $originalSlug = $slug;
+                $counter = 1;
+                while (Category::where('slug', $slug)->where('id', '!=', $category->id)->exists()) {
+                    $slug = $originalSlug . '-' . $counter;
+                    $counter++;
                 }
-
-                $image = $request->file('image');
-                $imageName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images/categories'), $imageName);
-                $category->image = 'images/categories/' . $imageName;
+                $category->slug = $slug;
             }
 
-            $category->save();
+            $category->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'is_active' => $request->boolean('is_active', true),
+                'is_featured' => $request->boolean('is_featured', false)
+            ]);
+
+            DB::commit();
 
             return redirect()->route('admin.categories.index')
                 ->with('success', 'تم تحديث التصنيف بنجاح');
         } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('خطأ في تحديث تصنيف: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'حدث خطأ أثناء تحديث التصنيف: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ أثناء تحديث التصنيف');
         }
     }
 
     public function destroy(Category $category)
     {
         try {
-            // حذف الصورة
-            if ($category->image && file_exists(public_path($category->image))) {
-                unlink(public_path($category->image));
-            }
-
             $category->delete();
-
             return redirect()->route('admin.categories.index')
                 ->with('success', 'تم حذف التصنيف بنجاح');
         } catch (\Exception $e) {
+            Log::error('خطأ في حذف تصنيف: ' . $e->getMessage());
             return redirect()->back()
-                ->with('error', 'حدث خطأ أثناء حذف التصنيف: ' . $e->getMessage());
+                ->with('error', 'حدث خطأ أثناء حذف التصنيف');
         }
     }
 }

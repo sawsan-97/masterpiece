@@ -46,29 +46,7 @@
         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
 
-    .whatsapp-float {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background-color: #25D366;
-        color: white;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        text-align: center;
-        font-size: 30px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        z-index: 100;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.3s ease;
-    }
 
-    .whatsapp-float:hover {
-        transform: scale(1.1);
-        color: white;
-    }
 
     /* نمط تسجيل الدخول المنسدل */
     .auth-menu {
@@ -521,10 +499,10 @@
                         <div class="card-body text-center">
                             <h5 class="card-title" style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">{{ $product->name }}</h5>
                             <p class="card-text" style="color: #555; margin-bottom: 1rem;">{{ Str::limit($product->description, 100) }}</p>
-                            <p class="card-text font-weight-bold" style="color: #007A3D; font-size: 1.2rem; margin-bottom: 1rem;">{{ number_format($product->price, 2) }} د.ك</p>
+                            <p class="card-text font-weight-bold" style="color: #007A3D; font-size: 1.2rem; margin-bottom: 1rem;">{{ number_format($product->price, 2) }} د.ا</p>
                             <form action="{{ route('cart.add', $product) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn" style="background-color: #007A3D; color: white; padding: 8px 25px; border-radius: 30px; transition: all 0.3s;">أضف للسلة</button>
+                                <button type="submit" class="btn" style="background-color: #007A3D; color: white; padding: 8px 25px; border-radius: 10px; transition: all 0.3s;">أضف للسلة</button>
                             </form>
                         </div>
                     </div>
@@ -771,6 +749,8 @@
         <i class="fas fa-plus"></i>
     </a>
 </div>
+
+
 @endsection
 
 @section('scripts')

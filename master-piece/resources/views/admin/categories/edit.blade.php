@@ -11,7 +11,7 @@
 
     <div class="card shadow mb-4">
         <div class="card-body">
-            <form action="{{ route('admin.categories.update', $category) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.categories.update', $category) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="row">
@@ -26,7 +26,7 @@
 
                         <div class="form-group">
                             <label for="description">وصف التصنيف</label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4">{{ old('description', $category->description) }}</textarea>
+                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3">{{ old('description', $category->description) }}</textarea>
                             @error('description')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -35,16 +35,19 @@
 
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label for="image">صورة التصنيف</label>
-                            @if($category->image)
-                                <div class="mb-2">
-                                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="img-thumbnail" width="200">
-                                </div>
-                            @endif
-                            <input type="file" class="form-control-file @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
-                            @error('image')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                            <input type="hidden" name="is_active" value="0">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1" {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
+                                <label class="custom-control-label" for="is_active">تصنيف مفعل</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="hidden" name="is_featured" value="0">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured" value="1" {{ old('is_featured', $category->is_featured) ? 'checked' : '' }}>
+                                <label class="custom-control-label" for="is_featured">تصنيف مميز</label>
+                            </div>
                         </div>
                     </div>
                 </div>

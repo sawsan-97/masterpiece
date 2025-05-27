@@ -30,6 +30,7 @@
 
     .contact-container {
         background-color: #fff;
+        border-radius: 10px 0 0 10px;
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
         overflow: hidden;
         padding: 20px;
@@ -85,6 +86,10 @@
         border-color: #007A3D;
     }
 
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+
     .form-label {
         display: block;
         margin-bottom: 8px;
@@ -122,6 +127,7 @@
     .contact-image {
         height: 100%;
         object-fit: cover;
+        border-radius: 0 10px 10px 0;
         width: 100%;
     }
 
@@ -131,67 +137,114 @@
         overflow: hidden;
         background-color: #fff;
     }
+
+    .alert {
+        margin-bottom: 20px;
+        padding: 15px;
+        border-radius: 4px;
+        direction: rtl;
+        text-align: right;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .alert ul {
+        margin: 0;
+        padding-right: 20px;
+    }
+
+    .invalid-feedback {
+        display: block;
+        width: 100%;
+        margin-top: 5px;
+        font-size: 0.875em;
+        color: #dc3545;
+        text-align: right;
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="container">
-    <h2 class="text-center mt-3">اتصل بنا</h2>
+<section class="contact-section">
+    <div class="container">
+        <h2 class="contact-heading">تواصل معنا</h2>
+        <p class="contact-subtext">نسعى للرد على جميع استفساراتكم في أسرع وقت ممكن، يرجى تعبئة النموذج أدناه أو التواصل معنا مباشرة عبر التفاصيل التالية</p>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <div class="contact-wrapper">
+            <div class="row no-gutters">
+                <div class="col-md-8">
+                    <div class="contact-container">
+                        <form action="{{ route('contact.submit') }}" method="POST">
+                            @csrf
+                            <div class="form-group">
+                                <label class="form-label">الاسم الكامل</label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required>
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">البريد الإلكتروني</label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror" name="email" placeholder="example@email.com" value="{{ old('email') }}" required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">رقم الهاتف</label>
+                                <input type="tel" class="form-control @error('phone') is-invalid @enderror" name="phone" placeholder="+962xxxxxxxx" value="{{ old('phone') }}" required>
+                                @error('phone')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">رسالتك</label>
+                                <textarea class="form-control @error('message') is-invalid @enderror" name="message" rows="5" placeholder="اكتب رسالتك هنا..." required>{{ old('message') }}</textarea>
+                                @error('message')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-submit">إرسال</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-md-4 p-0">
+                    <img src="{{ asset('images/login.jpg') }}" alt="" class="contact-image">
+                </div>
+            </div>
         </div>
-    @endif
-
-    @if($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-
-    <form method="POST" action="{{ route('contact.submit') }}">
-        @csrf
-
-        <div class="form-group mb-3">
-            <label for="name">الاسم الكامل</label>
-            <input type="text" name="name" id="name" required class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}">
-            @error('name')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="email">البريد الإلكتروني</label>
-            <input type="email" name="email" id="email" required class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}">
-            @error('email')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="phone">رقم الهاتف</label>
-            <input type="tel" name="phone" id="phone" required class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone') }}">
-            @error('phone')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <div class="form-group mb-3">
-            <label for="message">الرسالة</label>
-            <textarea name="message" id="message" rows="5" required class="form-control @error('message') is-invalid @enderror">{{ old('message') }}</textarea>
-            @error('message')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-
-        <button type="submit" class="btn btn-success">إرسال الرسالة</button>
-    </form>
-</div>
+    </div>
+</section>
 @endsection
 
 @section('scripts')

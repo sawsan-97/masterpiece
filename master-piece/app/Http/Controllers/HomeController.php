@@ -21,11 +21,8 @@ class HomeController extends Controller
             ->take(8)
             ->get();
 
-        // جلب التصنيفات النشطة
-        $categories = Category::where('is_active', true)
-            ->whereNull('parent_id')
-            ->with('children')
-            ->get();
+        // جلب التصنيفات النشطة فقط
+        $categories = Category::where('is_active', true)->get();
 
         return view('home', compact('featuredProducts', 'categories', 'news'));
     }

@@ -122,7 +122,7 @@
                         <p class="card-text font-weight-bold">{{ number_format($product->price, 2) }} د.أ</p>
                         <form action="{{ route('cart.add', $product) }}" method="POST">
                             @csrf
-                            <button type="submit" class="btn btn-gold">أضف للسلة</button>
+                            <button type="submit" class="btn" style="background-color: #28a745; color: white; padding: 8px 25px; border-radius: 10px; transition: all 0.3s;">أضف للسلة</button>
                         </form>
                     </div>
                 </div>

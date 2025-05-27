@@ -41,33 +41,35 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
+            'images' => 'nullable|array', // حذف شرط max
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:5120', // كل صورة حتى 5MB
             'category_id' => 'required|exists:categories,id',
             'stock' => 'required|integer|min:0',
             'unit' => 'required|string|max:50',
         ]);
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
-        }
-
         // إنشاء slug فريد
         $slug = Str::slug($request->name);
         $originalSlug = $slug;
         $counter = 1;
-
-        // التحقق من وجود الـ slug وإضافة رقم إذا كان موجوداً
         while (Product::where('slug', $slug)->exists()) {
             $slug = $originalSlug . '-' . $counter;
             $counter++;
         }
 
-        Product::create([
+        // احفظ صورة رئيسية إذا تم رفعها
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+        }
+
+        $product = Product::create([
             'name' => $request->name,
             'slug' => $slug,
             'description' => $request->description,
             'price' => $request->price,
-            'image' => $imagePath,
+            'image' => $imagePath, // صورة رئيسية أو null
             'category_id' => $request->category_id,
             'stock' => $request->stock ?? 0,
             'unit' => $request->unit ?? 'قطعة',
@@ -75,6 +77,32 @@ class ProductController extends Controller
             'is_featured' => false,
             'sale_price' => $request->sale_price,
         ]);
+
+        // أضف صورة رئيسية إلى جدول الصور إذا تم رفعها
+        if ($imagePath) {
+            $product->images()->create([
+                'image_path' => $imagePath,
+                'is_primary' => true,
+                'order' => 0,
+            ]);
+        }
+
+        // أضف الصور الإضافية
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $key => $image) {
+                $path = $image->store('products', 'public');
+                $product->images()->create([
+                    'image_path' => $path,
+                    'is_primary' => !$imagePath && $key == 0, // إذا لم يكن هناك صورة رئيسية، اجعل أول صورة إضافية رئيسية
+                    'order' => $key + 1,
+                ]);
+                // إذا لم يكن هناك صورة رئيسية، احفظ أول صورة إضافية في عمود image
+                if (!$imagePath && $key == 0) {
+                    $product->image = $path;
+                    $product->save();
+                }
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'تم إضافة المنتج بنجاح');
@@ -103,7 +131,7 @@ class ProductController extends Controller
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
             'stock' => 'required|integer|min:0',
             'unit' => 'required|string|max:50',
         ]);
@@ -116,19 +144,56 @@ class ProductController extends Controller
             $product->description = $request->description;
             $product->price = $request->price;
             $product->category_id = $request->category_id;
-            $product->is_active = $request->has('is_active');
-            $product->is_featured = $request->has('is_featured');
+            $product->is_active = $request->input('is_active', 0);
+            $product->is_featured = $request->input('is_featured', 0);
             $product->stock = $request->stock;
             $product->unit = $request->unit;
 
-            if ($request->hasFile('image')) {
-                if ($product->image) {
-                    Storage::disk('public')->delete($product->image);
+            $product->save();
+
+            // حذف الصور المحددة
+            if ($request->has('delete_images')) {
+                $deleteImageIds = $request->input('delete_images');
+                $imagesToDelete = $product->images()->whereIn('id', $deleteImageIds)->get();
+                foreach ($imagesToDelete as $img) {
+                    // حذف من التخزين إذا كانت الصورة موجودة
+                    if ($img->image_path && \Storage::disk('public')->exists($img->image_path)) {
+                        \Storage::disk('public')->delete($img->image_path);
+                    }
+                    // إذا كانت هذه الصورة هي الرئيسية، سنحتاج لتعيين صورة رئيسية جديدة لاحقاً
+                    $wasPrimary = $img->is_primary;
+                    $img->delete();
+                    // إذا كانت الصورة الرئيسية، حدث عمود image في المنتج
+                    if ($wasPrimary) {
+                        $newPrimary = $product->images()->first();
+                        if ($newPrimary) {
+                            $newPrimary->is_primary = true;
+                            $newPrimary->save();
+                            $product->image = $newPrimary->image_path;
+                        } else {
+                            $product->image = null;
+                        }
+                        $product->save();
+                    }
                 }
-                $product->image = $request->file('image')->store('products', 'public');
             }
 
-            $product->save();
+            // إضافة صور جديدة إذا تم رفعها
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $key => $image) {
+                    $path = $image->store('products', 'public');
+                    $product->images()->create([
+                        'image_path' => $path,
+                        'is_primary' => false, // يمكن تعديلها لاحقاً
+                        'order' => $product->images()->count() + $key,
+                    ]);
+                    // إذا لم يكن للمنتج صورة رئيسية، اجعل أول صورة جديدة هي الرئيسية
+                    if (!$product->image) {
+                        $product->image = $path;
+                        $product->save();
+                    }
+                }
+            }
 
             \Log::info('تم تحديث المنتج بنجاح', [
                 'product_id' => $product->id,

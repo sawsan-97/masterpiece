@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class NewsController extends Controller
 {
@@ -72,12 +73,25 @@ class NewsController extends Controller
         $validatedData['is_active'] = $request->has('is_active') ? 1 : 0;
 
         try {
+            // إنشاء slug فريد
+            $slug = Str::slug($request->title);
+            $originalSlug = $slug;
+            $counter = 1;
+            while (News::where('slug', $slug)->exists()) {
+                $slug = $originalSlug . '-' . $counter;
+                $counter++;
+            }
+            $validatedData['slug'] = $slug;
+
+            // إضافة معرف المستخدم الحالي
+            $validatedData['user_id'] = auth()->id();
+
             // معالجة الصورة إذا تم رفعها
             if ($request->hasFile('image')) {
                 Log::info('Image file received: ' . $request->file('image')->getClientOriginalName());
                 $imagePath = $request->file('image')->store('news', 'public');
                 Log::info('Image stored at: ' . $imagePath);
-                $validatedData['image'] = $imagePath; // تخزين المسار فقط بدون 'storage/'
+                $validatedData['image'] = 'storage/' . $imagePath;
             }
 
             // إضافة البيانات الأخرى المفقودة إذا لزم الأمر

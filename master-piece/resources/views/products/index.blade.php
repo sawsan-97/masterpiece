@@ -47,19 +47,19 @@
                                 <div class="card-body text-center">
                                     <h5 class="card-title" style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.75rem;">{{ $product->name }}</h5>
                                     <p class="card-text" style="color: #555; margin-bottom: 1rem;">{{ Str::limit($product->description, 100) }}</p>
-                                    <p class="card-text font-weight-bold" style="color: #007A3D; font-size: 1.2rem; margin-bottom: 1rem;">{{ number_format($product->price, 2) }} د.ك</p>
+                                    <p class="card-text font-weight-bold" style="color: #007A3D; font-size: 1.2rem; margin-bottom: 1rem;">{{ number_format($product->price, 2) }} د.ا</p>
                                     @if($product->stock > 0)
                                         <form action="{{ route('cart.add', $product) }}" method="POST" class="add-to-cart-form">
                                             @csrf
                                             <div class="row align-items-center">
                                                 <div class="col-md-3">
                                                     <div class="quantity-input">
-                                                        
+
                                                         <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" max="{{ $product->stock }}">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-9">
-                                                    <button type="submit" class="btn btn-gold px-5 mt-3 mt-md-0">أضف للسلة</button>
+                                                    <button type="submit" class="btn" style="background-color: green; color: white; padding: 8px 25px; border-radius: 10px; transition: all 0.3s;">أضف للسلة</button>
                                                 </div>
                                             </div>
                                         </form>

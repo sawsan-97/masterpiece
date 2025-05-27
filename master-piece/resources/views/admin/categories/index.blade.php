@@ -9,77 +9,80 @@
         </a>
     </div>
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
-
-    @if(session('error'))
-        <div class="alert alert-danger">
-            {{ session('error') }}
-        </div>
-    @endif
-
     <div class="card shadow mb-4">
         <div class="card-body">
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="table-responsive">
-                <table class="table table-bordered" width="100%" cellspacing="0">
+                <table class="table table-bordered" id="categoriesTable">
                     <thead>
                         <tr>
-                            <th>الصورة</th>
+                            <th style="width: 50px">#</th>
                             <th>الاسم</th>
                             <th>الوصف</th>
                             <th>الحالة</th>
-                            <th>عدد المنتجات</th>
-                            <th>الإجراءات</th>
+                            <th>مميز</th>
+                            <th style="width: 200px">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($categories as $category)
-                        <tr>
-                            <td>
-                                @if($category->image)
-                                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" width="50">
-                                @else
-                                    <img src="{{ asset('images/no-image.png') }}" alt="No Image" width="50">
-                                @endif
-                            </td>
-                            <td>{{ $category->name }}</td>
-                            <td>{{ Str::limit($category->description, 50) }}</td>
-                            <td>
-                                @if($category->is_active)
-                                    <span class="badge badge-success">نشط</span>
-                                @else
-                                    <span class="badge badge-danger">غير نشط</span>
-                                @endif
-                            </td>
-                            <td>{{ $category->products_count }}</td>
-                            <td>
-                                <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من حذف هذا التصنيف؟')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="6" class="text-center">لا توجد تصنيفات</td>
-                        </tr>
-                        @endforelse
+                        @foreach($categories as $category)
+                            <tr>
+                                <td>{{ $category->id }}</td>
+                                <td>{{ $category->name }}</td>
+                                <td>{{ Str::limit($category->description, 50) }}</td>
+                                <td>
+                                    <span class="badge badge-{{ $category->is_active ? 'success' : 'danger' }}">
+                                        {{ $category->is_active ? 'مفعل' : 'غير مفعل' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge badge-{{ $category->is_featured ? 'primary' : 'secondary' }}">
+                                        {{ $category->is_featured ? 'مميز' : 'عادي' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('admin.categories.destroy', $category) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('هل أنت متأكد من حذف هذا التصنيف؟')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
-            </div>
-            <div class="mt-4">
-                {{ $categories->links() }}
             </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#categoriesTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.10.24/i18n/Arabic.json"
+            }
+        });
+    });
+</script>
+@endpush
 @endsection

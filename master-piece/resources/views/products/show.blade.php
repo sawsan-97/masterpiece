@@ -13,9 +13,37 @@
     <div class="row">
         <!-- صورة المنتج -->
         <div class="col-md-5 mb-4">
-            <div class="product-image-container shadow-sm rounded overflow-hidden">
-                <img src="{{ $product->image_url }}" alt="{{ $product->name }}" class="img-fluid">
+            <div class="product-image-container shadow-sm rounded overflow-hidden" style="flex-direction: column;">
+                @php
+                    $allImages = $product->images && $product->images->count() ? $product->images : collect();
+                    if ($allImages->isEmpty() && $product->image) {
+                        $allImages = collect([(object)[
+                            'image_path' => $product->image
+                        ]]);
+                    }
+                @endphp
+                <div style="width: 100%; text-align: center; margin-bottom: 15px;">
+                    <img id="mainProductImage" src="{{ $allImages->count() ? asset('storage/' . $allImages->first()->image_path) : asset('images/placeholder.jpg') }}" alt="صورة المنتج" class="img-fluid" style="max-height: 350px; object-fit: contain; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                </div>
+                @if($allImages->count() > 0)
+                    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        @foreach($allImages as $img)
+                            <img src="{{ asset('storage/' . $img->image_path) }}" alt="صورة مصغرة" class="img-thumbnail product-thumb" style="width: 70px; height: 70px; object-fit: cover; cursor: pointer; border: 2px solid #eee; border-radius: 6px; transition: border 0.2s;">
+                        @endforeach
+                    </div>
+                @endif
             </div>
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('.product-thumb').forEach(function(thumb) {
+                    thumb.addEventListener('click', function() {
+                        document.getElementById('mainProductImage').src = this.src;
+                        document.querySelectorAll('.product-thumb').forEach(t => t.style.border = '2px solid #eee');
+                        this.style.border = '2px solid #8B0000';
+                    });
+                });
+            });
+            </script>
         </div>
 
         <!-- تفاصيل المنتج -->
@@ -28,7 +56,7 @@
                         <span class="text-decoration-line-through text-muted me-2">{{ number_format($product->price, 2) }} د.ك</span>
                         <span class="fw-bold text-danger fs-4">{{ number_format($product->sale_price, 2) }} د.ك</span>
                     @else
-                        <span class="fw-bold fs-4">{{ number_format($product->price, 2) }} د.ك</span>
+                        <span class="fw-bold fs-4">{{ number_format($product->price, 2) }} د.ا</span>
                     @endif
                 </div>
 
@@ -51,12 +79,12 @@
                         <div class="row align-items-center">
                             <div class="col-md-3">
                                 <div class="quantity-input">
-                                    <label for="quantity" class="form-label">الكمية</label>
-                                    <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" max="{{ $product->stock }}">
+
+                                    <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" max="{{ $product->stock }}" style="width: 80px;">
                                 </div>
                             </div>
                             <div class="col-md-9">
-                                <button type="submit" class="btn btn-gold px-5 mt-3 mt-md-0">أضف للسلة</button>
+                                <button type="submit" class="btn" style="background-color: #007A3D; color: white; padding: 8px 25px; border-radius: 10px; transition: all 0.3s; margin-right: 50px;">أضف للسلة</button>
                             </div>
                         </div>
                     </form>
@@ -92,7 +120,7 @@
                         <div class="card-body text-center">
                             <h5 class="card-title text-dark">{{ $relatedProduct->name }}</h5>
                             <p class="card-text text-muted">{{ Str::limit($relatedProduct->description, 60) }}</p>
-                            <p class="card-text fw-bold text-primary">{{ number_format($relatedProduct->price, 2) }} د.ك</p>
+                            <p style="color: #a83232;">{{ number_format($relatedProduct->price, 2) }} د.ا</p>
                         </div>
                     </a>
                 </div>
@@ -184,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
         transform: translateY(-50%);
         width: 5px;
         height: 24px;
-        background-color: rgba(255, 191, 0, 1);
+        background-color: #8B0000;
     }
 
     .product-card {
@@ -199,16 +227,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     .btn-gold {
-        background-color: rgba(255, 191, 0, 1);
+        background-color: #8B0000;
         color: white;
-        border-color: rgba(255, 191, 0, 1);
+        border-color: #8B0000;
         font-weight: 600;
         transition: all 0.3s;
     }
 
     .btn-gold:hover {
-        background-color: #e6ac00;
-        border-color: #e6ac00;
+        background-color: #8B0000;
+        border-color: #8B0000;
         color: white;
         transform: translateY(-2px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);

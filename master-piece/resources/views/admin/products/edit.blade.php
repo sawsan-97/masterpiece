@@ -84,6 +84,21 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+
+                        <div class="form-group">
+                            <input type="hidden" name="is_active" value="0">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1" {{ $product->is_active ? 'checked' : '' }}>
+                                <label class="custom-control-label" for="is_active">منتج مفعل</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="hidden" name="is_featured" value="0">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="is_featured" name="is_featured" value="1" {{ $product->is_featured ? 'checked' : '' }}>
+                                <label class="custom-control-label" for="is_featured">منتج مميز</label>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-4">
