@@ -291,34 +291,157 @@
         }
 
         .mobile-menu {
+            display: none;
             position: fixed;
             top: 90px;
-            right: 0;
-            left: auto;
-            width: 80%;
-            max-width: 350px;
-            height: calc(100vh - 90px);
+            left: 0;
+            width: 100%;
             background-color: #fff;
-            box-shadow: -4px 0 16px rgba(0,0,0,0.08);
-            text-align: right;
-            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             z-index: 1000;
-            padding: 1rem;
-            transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+            padding: 20px;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .mobile-menu.active {
             display: block;
         }
-        .mobile-menu.active {
-            transform: translateX(0);
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
         }
+
+        .mobile-nav-links .nav-link {
+            font-size: 18px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .mobile-dropdown {
+            position: relative;
+        }
+
+        .mobile-dropdown-content {
+            display: none;
+            background-color: #f9f9f9;
+            margin-top: 10px;
+            padding: 10px 0;
+            border-radius: 4px;
+        }
+
+        .mobile-dropdown-content.active {
+            display: block;
+        }
+
+        .mobile-dropdown-content a {
+            display: block;
+            padding: 10px 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        .mobile-dropdown-content a:hover {
+            background-color: #e9e9e9;
+        }
+
+        .mobile-user-section {
+            border-top: 1px solid #eaeaea;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+
+        .mobile-login-form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .mobile-cart {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            margin-top: 15px;
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .mobile-cart:hover {
+            background-color: #e9e9e9;
+        }
+
         @media (max-width: 992px) {
-            .mobile-menu { top: 70px; }
+            .navbar {
+                padding: 15px 30px;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .main-nav-links,
+            .navbar-left {
+                display: none;
+            }
+
+            .logo {
+                margin-right: 20px;
+            }
+
+            .mobile-menu {
+                top: 70px;
+            }
         }
+
         @media (max-width: 768px) {
-            .mobile-menu { top: 70px; padding: 15px; }
+            .navbar {
+                padding: 15px 20px;
+                height: 70px;
+            }
+
+            .logo {
+                margin-right: 10px;
+                margin-top: 0;
+            }
+
+            .logo img {
+                width: 80px;
+                margin-bottom: 0;
+            }
+
+            .mobile-menu {
+                top: 70px;
+                padding: 15px;
+            }
         }
+
         @media (max-width: 480px) {
-            .mobile-menu { top: 60px; }
+            .navbar {
+                padding: 10px 15px;
+                height: 60px;
+            }
+
+            .logo img {
+                width: 70px;
+            }
+
+            .mobile-menu {
+                top: 60px;
+            }
+
+            .mobile-nav-links .nav-link {
+                font-size: 16px;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

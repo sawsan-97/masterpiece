@@ -12,7 +12,7 @@
                 <div class="icon">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
-                <a href="{{ route('admin.orders.index') }}" class="small-box-footer">عرض التفاصيل <i class="fas fa-arrow-circle-left"></i></a>
+                <a href="{{ route('admin.orders.index') }}" class="small-box-footer"style="color: #000000 !important; font-weight: bold; padding: 10px 10px 20px 10px;">عرض التفاصيل <i class="fas fa-arrow-circle-left"></i></a>
             </div>
         </div>
 
@@ -25,7 +25,7 @@
                 <div class="icon">
                     <i class="fas fa-users"></i>
                 </div>
-                <a href="{{ route('admin.users.index') }}" class="small-box-footer">عرض التفاصيل <i class="fas fa-arrow-circle-left"></i></a>
+                <a href="{{ route('admin.users.index') }}" class="small-box-footer" style="color: #000000 !important; font-weight: bold; padding: 10px 10px 20px 10px;">عرض التفاصيل <i class="fas fa-arrow-circle-left"></i></a>
             </div>
         </div>
 
@@ -38,7 +38,7 @@
                 <div class="icon">
                     <i class="fas fa-box"></i>
                 </div>
-                <a href="{{ route('admin.products.index') }}" class="small-box-footer">عرض التفاصيل <i class="fas fa-arrow-circle-left"></i></a>
+                <a href="{{ route('admin.products.index') }}" class="small-box-footer"style="color: #000000 !important; font-weight: bold; padding: 10px 10px 20px 10px;">عرض التفاصيل <i class="fas fa-arrow-circle-left"></i></a>
             </div>
         </div>
 
@@ -51,7 +51,7 @@
                 <div class="icon">
                     <i class="fas fa-newspaper"></i>
                 </div>
-                <a href="{{ route('admin.news.index') }}" class="small-box-footer">عرض التفاصيل <i class="fas fa-arrow-circle-left"></i></a>
+                <a href="{{ route('admin.news.index') }}" class="small-box-footer"style="color: #000000 !important; font-weight: bold; padding: 10px 10px 20px 10px;">عرض التفاصيل <i class="fas fa-arrow-circle-left"></i></a>
             </div>
         </div>
     </div>

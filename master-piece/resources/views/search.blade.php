@@ -40,7 +40,25 @@
                                         <p class="card-text mb-2">
                                             <strong class="text-primary">السعر: {{ number_format($product->price, 2) }} د.أ</strong>
                                         </p>
-                                        <a href="{{ route('products.show', $product) }}" class="btn btn-primary w-100">عرض التفاصيل</a>
+                                        <form action="{{ route('cart.add', $product) }}" method="POST" class="add-to-cart-form">
+                                            @csrf
+                                            <div class="row align-items-center">
+                                                <div class="col-md-3">
+                                                    <div class="quantity-input">
+                                                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" max="{{ $product->stock }}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-9">
+                                                    <button type="submit" class="btn" style="background-color: #007A3D; color: white; padding: 8px 25px; border-radius: 10px; transition: all 0.3s;" {{ $product->stock == 0 ? 'disabled' : '' }}>
+                                                        أضف للسلة
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        @if($product->stock == 0)
+                                            <span class="badge bg-danger mt-2">غير متوفر حالياً</span>
+                                        @endif
+                                        <a href="{{ route('products.show', $product) }}" class="btn btn-primary w-100 mt-2">عرض التفاصيل</a>
                                     </div>
                                 </div>
                             </div>

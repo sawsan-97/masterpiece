@@ -53,8 +53,8 @@
 
                 <div class="product-price mb-4">
                     @if($product->sale_price)
-                        <span class="text-decoration-line-through text-muted me-2">{{ number_format($product->price, 2) }} د.ك</span>
-                        <span class="fw-bold text-danger fs-4">{{ number_format($product->sale_price, 2) }} د.ك</span>
+                        <span class="text-decoration-line-through text-muted me-2">{{ number_format($product->price, 2) }} د.ا</span>
+                        <span class="fw-bold text-danger fs-4">{{ number_format($product->sale_price, 2) }} د.ا</span>
                     @else
                         <span class="fw-bold fs-4">{{ number_format($product->price, 2) }} د.ا</span>
                     @endif
