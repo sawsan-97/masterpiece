@@ -14,13 +14,15 @@ class CartController extends Controller
 {
     public function index()
     {
-        if (Auth::check()) {
-            $cart = Cart::where('user_id', Auth::id())->first();
+        if (Auth::check()) {// ويتحقق مما إذا كان المستخدم مسجل الدخول
+
+            $cart = Cart::where('user_id', Auth::id())->first();//يحضر السلة الخاصة بالمستخدم
             $cartItems = $cart ? $cart->items : collect();
-            $total = $cartItems->sum(fn($item) => $item->price * $item->quantity);
+            $total = $cartItems->sum(fn($item) => $item->price * $item->quantity);//يحسب اجمالي السلة
             return view('cart.index', compact('cart', 'cartItems', 'total'));
         }
-        return redirect()->route('login');
+        return redirect()->route('login');// إذا كان المستخدم غير مسجل الدخول، يتم إعادة توجيهه إلى صفحة تسجيل الدخول
+
     }
 
     public function add(Request $request, Product $product)

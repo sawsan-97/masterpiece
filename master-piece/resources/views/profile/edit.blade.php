@@ -135,7 +135,7 @@
                                     <div class="col-md-3">
                                         <div style="text-align: center;">
                                             <div style="font-weight: bold; color: #007A3D; font-size: 18px; margin-bottom: 4px;">
-                                                {{ number_format($order->total, 2) }}
+                                                {{ number_format($order->total, 2) }} د.ا
                                             </div>
                                             <small style="color: #6c757d;">
                                                 <i class="fas fa-money-bill-wave" style="margin-left: 4px;"></i>

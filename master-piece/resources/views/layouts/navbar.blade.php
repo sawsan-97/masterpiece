@@ -40,16 +40,17 @@
 
         .logo {
             display: flex;
-            align-items: center;
-            padding: 10px;
-            margin-top: -15px;
-            margin-right: 40px;
+            align-items: flex-start;
+            padding: 0;
+            margin: 0 20px 0 0;
+            height: 90px;
         }
 
         .logo img {
-            width: 100px;
-            height: auto;
-            margin-bottom: 10px;
+            width: auto;
+            height: 85px;
+            margin-bottom: 0;
+            margin-top: -8px;
         }
 
         .main-nav-links {
@@ -449,18 +450,18 @@
 <body>
     <nav class="navbar">
         <div class="navbar-right">
-            <div class="logo">
-                <a href="{{ route('home') }}">
-                    <img src="{{ asset('images/nashmia-logo.ico') }}" alt="شعار نشمية">
+            <div class="logo" style="margin: 0 20px 0 0; padding: 0; display: flex; align-items: flex-start; height: 90px;">
+                <a href="{{ route('home') }}" style="display: flex; align-items: flex-start; height: 100%;">
+                    <img src="{{ asset('images/nashmia-logo.ico') }}" alt="شعار نشمية" style="height: 85px; width: 120px; display: block; margin: 0; margin-top: -18px;">
                 </a>
             </div>
 
             <div class="main-nav-links">
                 <a href="{{ route('home') }}" class="nav-link">الرئيسية</a>
                 <div class="dropdown">
-                    <a href="#" class="nav-link">التصنيفات</a>
+                    <a href="{{ route('products.index') }}" class="nav-link">التصنيفات</a>
                     <div class="dropdown-content">
-                        @foreach($categories as $category)
+                        @foreach($categories->take(4) as $category)
                             <a href="{{ route('categories.show', $category) }}">{{ $category->name }}</a>
                         @endforeach
                     </div>
@@ -479,6 +480,9 @@
                     </a>
                     <div class="dropdown-content" aria-labelledby="userDropdown" style="right:0; left:auto; min-width: 160px;">
                         <a href="{{ route('profile.edit') }}">الملف الشخصي</a>
+                        @if(Auth::user() && Auth::user()->is_admin)
+                            <a href="{{ route('admin.dashboard') }}">لوحة التحكم</a>
+                        @endif
                         <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                             @csrf
                             <button type="submit" style="background:none; border:none; color:#b71c1c; width:100%; text-align:right; padding:12px 16px; cursor:pointer;">تسجيل خروج</button>
@@ -561,9 +565,12 @@
         <div class="mobile-user-section">
             @auth
                 <div class="mobile-dropdown">
-                    <a href="#" class="nav-link" style="color: #2563eb;">أهلاً، {{ Auth::user()->name }} <i class="fas fa-chevron-down" style="font-size: 12px; margin-right: 5px;"></i></a>
+                    <a href="#" class="nav-link" style="color: #eb3f25;">أهلاً، {{ Auth::user()->name }} <i class="fas fa-chevron-down" style="font-size: 12px; margin-right: 5px;"></i></a>
                     <div class="mobile-dropdown-content">
                         <a href="{{ route('profile.edit') }}">الملف الشخصي</a>
+                        @if(Auth::user() && Auth::user()->is_admin)
+                            <a href="{{ route('admin.dashboard') }}">لوحة التحكم</a>
+                        @endif
                         <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                             @csrf
                             <button type="submit" style="background:none; border:none; color:#b71c1c; width:100%; text-align:right; padding:10px 20px; cursor:pointer; font-size: 16px;">تسجيل خروج</button>

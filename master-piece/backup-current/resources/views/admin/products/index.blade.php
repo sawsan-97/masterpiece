@@ -47,7 +47,7 @@
                             </td>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->category->name ?? 'بدون فئة' }}</td>
-                            <td>{{ number_format($product->price, 2) }} ريال</td>
+                            <td>{{ number_format($product->price, 2) }} د.أ</td>
                             <td>
                                 @if($product->is_active)
                                     <span class="badge badge-success">نشط</span>

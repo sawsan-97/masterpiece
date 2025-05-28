@@ -57,7 +57,7 @@ class Product extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class);//كل منتج مرتبط بتصنيف واحد
     }
 
     // إضافة accessor للحصول على المسار الكامل للصورة
@@ -71,7 +71,7 @@ class Product extends Model
 
     public function images()
     {
-        return $this->hasMany(ProductImage::class, 'product_id');
+        return $this->hasMany(ProductImage::class, 'product_id');//كل منتج يمكن أن يكون لديه عدة صور
     }
 
     // باقي العلاقات والوظائف...

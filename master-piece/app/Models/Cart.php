@@ -18,12 +18,12 @@ class Cart extends Model
 
     public function items()
     {
-        return $this->hasMany(CartItem::class);
+        return $this->hasMany(CartItem::class);//كل سله فيها اكتر من عنصر
     }
 
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);//لكل سله ينتمي مستخدم واحد
     }
 
     public function getTotalQuantityAttribute()

@@ -38,7 +38,7 @@
                                     @endif
                                     <div class="mt-auto">
                                         <p class="card-text mb-2">
-                                            <strong class="text-primary">السعر: {{ number_format($product->price, 2) }} د.أ</strong>
+                                            <strong class="text-primary">السعر: {{ number_format($product->price, 2) }} د.ا</strong>
                                         </p>
                                         <form action="{{ route('cart.add', $product) }}" method="POST" class="add-to-cart-form">
                                             @csrf

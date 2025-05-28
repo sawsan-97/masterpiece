@@ -190,9 +190,9 @@
             <div class="row">
                 <!-- القسم الأول: الشعار ونبذة -->
                 <div class="col-lg-4 footer-section">
-                    <img src="{{ asset('images/nashmia-logo.ico') }}" alt="شعار نشمية الأردنية" class="footer-logo">
+                    <img src="{{ asset('images/freepik__background__2489.png') }}" alt="شعار نشمية الأردنية" class="footer-logo">
                     <p class="footer-about">
-                        نشمية الأردنية - منصتك الأولى للمنتجات الحرفية والغذائية المنزلية الأردنية. نربط الحرفيات المبدعات بالمستهلكين مباشرة.
+                        بيت النشميات  - منصتك الأولى للمنتجات الحرفية والغذائية المنزلية الأردنية. نربط الحرفيات المبدعات بالمستهلكين مباشرة.
                     </p>
                 </div>
 
@@ -236,7 +236,7 @@
 
             <!-- حقوق النشر -->
             <div class="footer-bottom">
-                <p class="mb-0">جميع الحقوق محفوظة &copy; {{ date('Y') }} نشمية الأردنية</p>
+                <p class="mb-0">جميع الحقوق محفوظة &copy; {{ date('Y') }} بيت النشميات</p>
             </div>
         </div>
     </footer>

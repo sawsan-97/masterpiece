@@ -23,9 +23,14 @@ class Category extends Model
         'is_featured' => 'boolean'
     ];
 
-    public function products(): HasMany
+    public function products(): HasMany//هذا يعني أن كل تصنيف يحتوي على عدة منتجات
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class);// يحدد أن slug يجب استخدامه في الروابط بدلاً من id.
+        //✅ مثال: بدلاً من /categories/1 سيكون /categories/electronics.
+       // 🚀 هذا يجعل الروابط أكثر قابلية للفهم ومحسنة لمحركات البحث (SEO).//
+
+
+
     }
 
     public function getRouteKeyName()

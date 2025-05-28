@@ -20,7 +20,8 @@ class News extends Model
         'is_active',
         'published_at',
         'user_id',
-        'meta_description',
+        'meta_description',//يوفر وظائف لإنشاء مقتطفات (excerpt) وتحسين البحث من خلال meta_description & meta_keywords
+
         'meta_keywords'
     ];
 
@@ -44,7 +45,9 @@ class News extends Model
      */
     public function getExcerpt($length = 100)
     {
-        return Str::limit(strip_tags($this->content), $length);
+        return Str::limit(strip_tags($this->content), $length);// يتم إزالة الأكواد HTML (strip_tags()) لضمان أن الملخص لا يحتوي على عناصر غير مرغوبة.
+
+
     }
 
     /**

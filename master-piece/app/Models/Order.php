@@ -36,12 +36,13 @@ class Order extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);//كل طلب مرتبط بمستخدم واحد
     }
 
     public function orderItems()
     {
-        return $this->hasMany(OrderItem::class);
+        return $this->hasMany(OrderItem::class);//كل طلب يحتوي على عدة عناصر
+
     }
 
     public function items()
@@ -51,7 +52,12 @@ class Order extends Model
 
     public static function generateOrderNumber()
     {
-        $orderNumber = 'NS-' . date('Ymd') . '-' . rand(1000, 9999);
+        $orderNumber = 'NS-' . date('Ymd') . '-' . rand(1000, 9999);// يقوم بإنشاء رقم طلب فريد باستخدام تنسيق NS-YYYYMMDD-XXXX.
+        //✅ يتحقق من أن الرقم غير مستخدم مسبقًا قبل اعتماده.
+        //🚀 يساعد هذا في ضمان عدم تكرار أرقام الطلبات ويجعلها سهلة التتبع.
+
+
+
 
         while (self::where('order_number', $orderNumber)->exists()) {
             $orderNumber = 'NS-' . date('Ymd') . '-' . rand(1000, 9999);

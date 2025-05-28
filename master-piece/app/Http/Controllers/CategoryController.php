@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function show(Category $category)
+    public function show(Category $category)//جلب المنتجات المتعلقه بالفئه
     {
         $products = $category->products()
             ->where('is_active', true)
@@ -21,3 +21,9 @@ class CategoryController extends Controller
         return view('categories.show', compact('category', 'products'));
     }
 }
+// ملخص الوظيفة
+//✅ يعرض المنتجات المرتبطة بفئة معينة.
+//✅ يجلب فقط المنتجات النشطة.
+//✅ يرتب الصور بحيث تظهر الصورة الأساسية أولًا.
+//✅ يقسم المنتجات إلى صفحات لتحسين الأداء.
+//✅ يرسل البيانات إلى واجهة المستخدم لعرضها.

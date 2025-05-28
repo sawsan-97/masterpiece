@@ -17,12 +17,13 @@ class CartItem extends Model
         'price'
     ];
 
-    public function cart(): BelongsTo
+    public function cart(): BelongsTo//هذا يعني أن كل عنصر ينتمي إلى عربة واحدة فقط
+
     {
         return $this->belongsTo(Cart::class);
     }
 
-    public function product(): BelongsTo
+    public function product(): BelongsTo//هذا يعني أن كل عنصر مرتبط بمنتج واحد
     {
         return $this->belongsTo(Product::class);
     }
